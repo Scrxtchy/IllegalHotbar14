@@ -1,0 +1,71 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js" integrity="sha512-csNcFYJniKjJxRWRV1R7fvnXrycHP6qDR21mgz1ZP55xY5d+aHLfo9/FcGDQLfn2IfngbAHd8LdfsagcCqgTcQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<h1>Illegal Emote Script</h1>
+This is incredibly lazy right now<br>
+But it works.<br>
+
+<h3>Instructions</h3>
+<ol>
+	<li><strong>BACKUP YOUR HOTBAR.DAT FILE JUST IN CASE</strong></li>
+	<li>Place Straight Face and Smile on your hotbar</li>
+	<ul>
+		<li><strong>Smile</strong> will be replaced with <strong>Chair Sit</strong></li>
+		<li><strong>Straight Face</strong> will be replaced with <strong>Bed Sleep</strong></li>
+		<li>You do not have to logout for changes to hotbars to be saved, they will be saved to disk as soon as you change them</li>
+	</ul>
+	<li>Click the browse button below and locate your appropriate HOTBAR.DAT</li>
+	<ul>
+		<li>On windows these are in <pre>%USERPROFILE%\Documents\My Games\FINAL FANTASY XIV - A Realm Reborn\FFXIV_CHR...</pre></li>
+		<li>If you have multiple characters, you will need to find the write character data that you want to configure<br>One helpful method of doing this would be to look at the Time Modified of its appropriate files, if you're working on it now, it should have the current time on it</li>
+		<li><strong>Files are not uploaded anywhere</strong>, modifications are made with the security of your browser</li>
+	</ul>
+	<li>Click yes (or no) to make apporpriate configurations to your hotbars</li>
+	<li>You will be finally asked to save your new hotbar configuration, replace your existing HOTBAR.DAT with the new file</li>
+	<li>Login to your character again and see changes made</li>
+</ol>
+
+
+
+
+<input type="file" id="input">
+
+<script>
+	const inputElement = document.getElementById("input");
+	inputElement.addEventListener("change", handleFiles, false);
+	var emotes = []
+	function handleFiles() {
+		const read = new FileReader();
+		read.onload = function(e){
+			const aB = e.target.result;
+			const contents = new Uint8Array(aB)
+			console.log(contents)
+			for (i=7; i < contents.length; i=i+8){
+				if (contents[i] == 0x37) {
+					if (contents[i-7] == 0x74) {
+						if(confirm("Found Smile at 0x" + (i-7).toString(16) + "\nReplace hotbar entry with Chair Sit?")){
+							contents[i-7] = 0x51
+						}
+					}
+					if (contents[i-7] == 0x75) {
+						if(confirm("Found StraightFace at 0x" + (i-7).toString(16) + "\nReplace hotbar entry with Bed Sleep?")){
+							contents[i-7] = 0x69
+						}
+					}
+					
+					//TODO: some thing with this, will need a catalogue and make it smart
+					//emotes.push([i-7, contents.slice(i-7, i+1)])
+				}
+			}
+
+			const blob = new Blob([contents], {type:"application/octet-stream"})
+			saveAs(blob, "HOTBAR.DAT")
+
+		}
+		read.readAsArrayBuffer(this.files[0])
+	}
+
+//smile        0x74
+//straightface 0x75
+
+
+</script>
